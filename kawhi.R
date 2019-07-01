@@ -20,9 +20,19 @@ ggplot(shirt_data_datetime) +
   theme_light()
 
 ggplot(shirt_data_datetime) +
+  geom_bar(aes(x = color)) +
+  theme_light()
+
+ggplot(shirt_data_datetime) +
   geom_boxplot(aes(x = factor(size, levels = c("S", "M", "L", "XL", "XXL")), y = price)) +
   labs(x = "size") +
   facet_wrap(~ slogan, nrow = 2)
+
+ggplot(shirt_data_datetime) +
+  geom_boxplot(aes(x = factor(size, levels = c("S", "M", "L", "XL", "XXL")), y = price)) +
+  labs(x = "size") +
+  facet_wrap(~ color, nrow = 2)
+
 
 ggplot(filter(shirt_data_datetime, size %in% c("M", "L", "XL"))) +
   geom_point(aes(x = time, y = price)) +
@@ -32,6 +42,7 @@ ggplot(filter(shirt_data_datetime, size %in% c("M", "L", "XL"))) +
 
 ggplot(shirt_data_datetime) +
   geom_point(aes(x = time, y = price)) +
+  geom_smooth(aes(x = time, y = price), formula = y ~ x, se = T, method = "lm") +
   theme_light()
 
 model <- lm(price ~ time + size + slogan + color, shirt_data_datetime)
@@ -43,6 +54,7 @@ shirt_data_pred_resid <- shirt_data_datetime %>%
 
 rmse <- shirt_data_pred_resid %>% 
   summarize(rmse = sqrt(mean((resid)^2)))
+rmse
 
 test_data <- tribble(
   ~time, ~size, ~color, ~slogan,
@@ -60,7 +72,12 @@ test_data <- tribble(
   mdy_hm("07-01-2019 12:00"), "L", "white", "board man"
 )
 
-predict(model, test_data, interval="predict") 
-
-
 test_data_pred <- test_data %>% add_predictions(model)
+
+ggplot(filter(shirt_data_datetime, slogan == "board man" & color == "black")) +
+  + geom_point(aes(x = time, y = price))
+
+ggplot(filter(shirt_data_datetime, (slogan == "board man" & color == "black") | slogan == "fun guy")) +
+  + geom_point(aes(x = time, y = price))
+
+View(test_data_pred)

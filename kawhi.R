@@ -75,9 +75,16 @@ test_data <- tribble(
 test_data_pred <- test_data %>% add_predictions(model)
 
 ggplot(filter(shirt_data_datetime, slogan == "board man" & color == "black")) +
-  + geom_point(aes(x = time, y = price))
+  geom_point(aes(x = time, y = price)) +
+  geom_smooth(aes(x = time, y = price), formula = y ~ x, se = T, method = "lm") +
+  geom_vline(aes(xintercept = ymd_hm("2019-06-17 7:00")), color = "green") +
+  ylim(25, 225) +
+  ggtitle("Black board man shirt price over time")
 
 ggplot(filter(shirt_data_datetime, (slogan == "board man" & color == "black") | slogan == "fun guy")) +
-  + geom_point(aes(x = time, y = price))
+  geom_point(aes(x = time, y = price)) +
+  geom_smooth(aes(x = time, y = price), formula = y ~ x, se = T, method = "lm") +
+  ylim(25, 225) +
+  ggtitle("Price of all other shirts over time")
 
 View(test_data_pred)
